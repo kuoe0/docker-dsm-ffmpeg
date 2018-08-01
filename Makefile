@@ -2,5 +2,4 @@
 
 .PHONY: image
 image:
-	docker build -t dathan/ffmpeg-vaapi .
-
+	docker build -t kuoe0/dsm-ffmpeg-qsv .
