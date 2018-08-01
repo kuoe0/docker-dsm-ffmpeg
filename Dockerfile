@@ -1,4 +1,4 @@
-FROM centos:7
+FROM ubuntu:18.04
 MAINTAINER Chih-Hsuan Kuo <kuoe0.tw@gmail.com>
 
 
@@ -9,19 +9,17 @@ WORKDIR /work
 
 ENV TARGET_VERSION=4.0 \
     LIBVA_VERSION=2.2.0 \
-    SRC=/usr \
-    PKG_CONFIG_PATH=/usr/lib/pkgconfig
+    SRC=/usr
 
-RUN yum install -y --enablerepo=extras epel-release yum-utils && \
-    # Install libdrm
-    yum install -y libdrm libdrm-devel && \
-    # Install build dependencies
+RUN apt update
+RUN apt install -y libdrm2 libdrm-dev && \
+# Install build dependencies
     build_deps="automake autoconf bzip2 \
-                cmake freetype-devel gcc \
-                gcc-c++ git libtool make \
-                mercurial nasm pkgconfig \
-                yasm zlib-devel" && \
-    yum install -y ${build_deps}
+                cmake curl libfreetype6-dev \
+                gcc g++ git libtool make \
+                mercurial nasm pkg-config \
+                yasm zlib1g-dev" && \
+    apt install -y ${build_deps}
 
 # Build libva
 RUN DIR=$(mktemp -d) && cd ${DIR} && \
@@ -57,8 +55,8 @@ RUN DIR=$(mktemp -d) && cd ${DIR} && \
     rm -rf ${DIR}
 
 # Cleanup build dependencies and temporary files
-RUN yum history -y undo last && \
-    yum clean all
+RUN apt purge -y ${build_deps} && \
+    apt -y autoclean
 
 # Show ffmpeg info
 RUN ffmpeg -buildconf
