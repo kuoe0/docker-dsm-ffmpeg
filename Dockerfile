@@ -22,23 +22,26 @@ RUN yum install -y --enablerepo=extras epel-release yum-utils && \
                 gcc-c++ git libtool make \
                 mercurial nasm pkgconfig \
                 yasm zlib-devel" && \
-    yum install -y ${build_deps} && \
-    # Build libva
-    DIR=$(mktemp -d) && cd ${DIR} && \
+    yum install -y ${build_deps}
+
+# Build libva
+RUN DIR=$(mktemp -d) && cd ${DIR} && \
     curl -sL https://www.freedesktop.org/software/vaapi/releases/libva/libva-${LIBVA_VERSION}.tar.bz2 | \
     tar -jx --strip-components=1 && \
     ./configure CFLAGS=' -O2' CXXFLAGS=' -O2' --prefix=${SRC} && \
     make && make install && \
-    rm -rf ${DIR} && \
-    # Build libva-intel-driver
-    DIR=$(mktemp -d) && cd ${DIR} && \
+    rm -rf ${DIR}
+
+# Build libva-intel-driver
+RUN DIR=$(mktemp -d) && cd ${DIR} && \
     curl -sL https://www.freedesktop.org/software/vaapi/releases/libva-intel-driver/intel-vaapi-driver-${LIBVA_VERSION}.tar.bz2 | \
     tar -jx --strip-components=1 && \
     ./configure && \
     make && make install && \
-    rm -rf ${DIR} && \
-    # Build ffmpeg
-    DIR=$(mktemp -d) && cd ${DIR} && \
+    rm -rf ${DIR}
+
+# Build ffmpeg
+RUN DIR=$(mktemp -d) && cd ${DIR} && \
     curl -sL http://ffmpeg.org/releases/ffmpeg-${TARGET_VERSION}.tar.gz | \
     tar -zx --strip-components=1 && \
     ./configure \
@@ -51,8 +54,11 @@ RUN yum install -y --enablerepo=extras epel-release yum-utils && \
     make && make install && \
     make distclean && \
     hash -r && \
-    # Cleanup build dependencies and temporary files
-    rm -rf ${DIR} && \
-    yum history -y undo last && \
-    yum clean all && \
-    ffmpeg -buildconf
+    rm -rf ${DIR}
+
+# Cleanup build dependencies and temporary files
+RUN yum history -y undo last && \
+    yum clean all
+
+# Show ffmpeg info
+RUN ffmpeg -buildconf
