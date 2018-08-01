@@ -8,8 +8,7 @@ ENTRYPOINT ["ffmpeg"]
 WORKDIR /work
 
 ENV TARGET_VERSION=4.0 \
-    LIBVA_VERSION=1.8.2 \
-    LIBDRM_VERSION=2.4.80 \
+    LIBVA_VERSION=2.2.0 \
     SRC=/usr \
     PKG_CONFIG_PATH=/usr/lib/pkgconfig
 
@@ -26,7 +25,7 @@ RUN yum install -y --enablerepo=extras epel-release yum-utils && \
 
 # Build libva
 RUN DIR=$(mktemp -d) && cd ${DIR} && \
-    curl -sL https://www.freedesktop.org/software/vaapi/releases/libva/libva-${LIBVA_VERSION}.tar.bz2 | \
+    curl -sL "https://github.com/intel/libva/releases/download/${LIBVA_VERSION}/libva-${LIBVA_VERSION}.tar.bz2" | \
     tar -jx --strip-components=1 && \
     ./configure CFLAGS=' -O2' CXXFLAGS=' -O2' --prefix=${SRC} && \
     make && make install && \
@@ -35,6 +34,7 @@ RUN DIR=$(mktemp -d) && cd ${DIR} && \
 # Build libva-intel-driver
 RUN DIR=$(mktemp -d) && cd ${DIR} && \
     curl -sL https://www.freedesktop.org/software/vaapi/releases/libva-intel-driver/intel-vaapi-driver-${LIBVA_VERSION}.tar.bz2 | \
+    curl -sL "https://github.com/intel/intel-vaapi-driver/releases/download/${LIBVA_VERSION}/intel-vaapi-driver-${LIBVA_VERSION}.tar.bz2" | \
     tar -jx --strip-components=1 && \
     ./configure && \
     make && make install && \
