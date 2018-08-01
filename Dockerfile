@@ -28,7 +28,7 @@ RUN yum install -y --enablerepo=extras epel-release yum-utils && \
 RUN DIR=$(mktemp -d) && cd ${DIR} && \
     curl -sL https://www.freedesktop.org/software/vaapi/releases/libva/libva-${LIBVA_VERSION}.tar.bz2 | \
     tar -jx --strip-components=1 && \
-    ./configure CFLAGS=' -O2' CXXFLAGS=' -O2' --prefix=${SRC} && \
+    ./configure CFLAGS=' -O3' CXXFLAGS=' -O3' --prefix=${SRC} && \
     make && make install && \
     rm -rf ${DIR}
 
