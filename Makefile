@@ -2,4 +2,4 @@
 
 .PHONY: image
 image:
-	docker build -t kuoe0/ffmpeg-vaapi .
+	docker build --build-arg MAKE_JOBS=$(shell nproc) -t kuoe0/dsm-ffmpeg-vaapi .
