@@ -22,9 +22,13 @@ ENV CMRT_VERSION=1.0.6 \
 # Build Environment
 ENV PREFIX=/usr \
     PKG_CONFIG_PATH=/usr/lib/pkgconfig \
+    DEPS_TOOL_PATH=/opt/local \
     INTEL_MEDIA_SDK_PATH=/opt/intel/mediasdk \
     LIBMFX_INCLUDE=/opt/intel/mediasdk/include/mfx \
     LIBMFX_PC=/usr/lib64/pkgconfig/libmfx.pc
+
+# Update $PATH (need to be a single command to make $DEPS_TOOL_PATH have value)
+ENV PATH="${DEPS_TOOL_PATH}/bin:${PATH}"
 
 ARG MAKE_JOBS=1
 
@@ -46,8 +50,8 @@ RUN yum install -y --enablerepo=extras epel-release yum-utils && \
 RUN DIR=$(mktemp -d) && cd ${DIR} && \
     curl -sL "https://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/nasm-${NASM_VERSION}.tar.gz" | \
     tar -zx --strip-components=1 && \
-    ./configure --prefix=${PREFIX} \
-                --bindir=${PREFIX}/bin \
+    ./configure --prefix=${DEPS_TOOL_PATH} \
+                --bindir=${DEPS_TOOL_PATH}/bin \
                 CFLAGS=' -O2' CXXFLAGS=' -O2' && \
     make -j${MAKE_JOBS} && make install && make distclean && \
     rm -rf ${DIR}
@@ -61,8 +65,7 @@ RUN DIR=$(mktemp -d) && cd ${DIR} && \
     ./configure --prefix=${PREFIX} \
                 --bindir=${PREFIX}/bin \
                 --enable-pic \
-                --enable-shared \
-    CFLAGS=' -O2' CXXFLAGS=' -O2' && \
+                --enable-shared && \
     make -j${MAKE_JOBS} && make install && make distclean && \
     rm -rf ${DIR}
 
